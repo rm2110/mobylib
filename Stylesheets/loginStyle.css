@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Nata+Sans:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Nata Sans", sans-serif;
+      background-color: #fff;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: #fff;
+      border: 1px solid #000;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    #logo {
+      width: 30%;
+      height: 30%;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+    }
+
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.6rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .login-container input::placeholder {
+      color: #666;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 0.9rem;
+      margin-top: 1rem;
+      background: #fff;
+      color: #000;
+      font-size: 1rem;
+      font-weight: bold;
+      border: 1px solid #000;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .login-container button:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    .links {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .links a {
+      color: #555;
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    input, button{
+        font-family: "Nata Sans", sans-serif;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 1.5rem;
+        max-width: 90%;
+      }
+    }
