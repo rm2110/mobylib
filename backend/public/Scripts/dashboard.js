@@ -1,23 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
   const fullName = localStorage.getItem('fullName');
-
-  // If no user, redirect back to login
   if (!fullName) {
     window.location.href = '/login.html';
     return;
   }
 
   // Show greeting
-  const greeting = document.getElementById('greeting');
-  greeting.textContent = `Hi, ${fullName}`;
+  document.getElementById('greeting').textContent = `Hi, ${fullName}`;
+
+  // Elements
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  // Open sidebar
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+  });
+
+  // Close sidebar when clicking outside
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
 
   // Logout functionality
-  const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('fullName');
-
-    // Redirect to login with message
     const params = new URLSearchParams();
     params.append('loggedOut', 'true');
     window.location.href = `/login.html?${params.toString()}`;
