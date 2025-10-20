@@ -7,9 +7,9 @@
 }
 
 .book-cover {
-  width: 150px !important;       /* Force width */
+  width: 150px !important;  
   height: auto !important;
-  max-height: 220px;             /* optional - limit vertical size */
+  max-height: 220px;        
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
