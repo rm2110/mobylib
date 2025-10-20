@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-// Middleware for authentication
+// Auth middleware
 function auth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ message: 'No token provided' });
@@ -24,11 +24,23 @@ function auth(req, res, next) {
 router.get('/', async (req, res) => {
   try {
     const query = req.query.q?.trim();
-    if (!query) return res.json([]); // Return empty array if no search term
-
+    if (!query) return res.json([]);
     const books = await Book.find({ title: new RegExp(query, 'i') });
     res.json(books);
   } catch (err) {
+    console.error('Search error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /api/books/bookshelf — fetch user’s bookshelf
+router.get('/bookshelf', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('bookshelf.bookId');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ bookshelf: user.bookshelf });
+  } catch (err) {
+    console.error('Bookshelf fetch error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -40,15 +52,15 @@ router.get('/:id', async (req, res) => {
     if (!book) return res.status(404).json({ message: 'Book not found' });
     res.json(book);
   } catch (err) {
+    console.error('Book fetch error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// POST /api/books/status — save book status for a user
+// POST /api/books/status — add/update a book’s status
 router.post('/status', auth, async (req, res) => {
   try {
     const { bookId, status } = req.body;
-
     if (!bookId || !status) {
       return res.status(400).json({ message: 'Missing bookId or status' });
     }
@@ -56,18 +68,17 @@ router.post('/status', auth, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Check if book already exists in user's bookshelf
-    const existing = user.bookshelf.find(b => b.bookId.toString() === bookId);
-    if (existing) {
-      existing.status = status;
+    const existingEntry = user.bookshelf.find(entry => entry.bookId.toString() === bookId);
+    if (existingEntry) {
+      existingEntry.status = status;
     } else {
       user.bookshelf.push({ bookId, status });
     }
 
     await user.save();
-    res.json({ message: 'Book status updated successfully' });
+    res.json({ message: 'Book added to your bookshelf!' });
   } catch (err) {
-    console.error('Error saving status:', err);
+    console.error('Error saving book status:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
