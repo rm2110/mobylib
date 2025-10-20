@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Details | MobyLib</title>
+  <link rel="stylesheet" href="/Stylesheets/book.css" />
+  <link rel="icon" type="image/x-icon" href="/Images/logo_white.jpg">
+</head>
+<body>
+  <div class="book-container">
+    <img id="bookCover" class="book-cover" src="" alt="Book Cover" />
+    <div class="book-info">
+      <h1 id="bookTitle"></h1>
+      <div class="book-author" id="bookAuthor"></div>
+      <div><strong>⭐ Rating:</strong> <span id="bookRating"></span></div>
+      <p class="book-description" id="bookDescription"></p>
+      <label for="statusSelect">📖 Status:</label>
+      <select id="statusSelect">
+        <option value="want-to-read">Want to Read</option>
+        <option value="currently-reading">Currently Reading</option>
+        <option value="read">Read</option>
+      </select>
+      <button id="saveStatusBtn">Save</button>
+    </div>
+  </div>
+
+  <script>
+    const bookId = new URLSearchParams(window.location.search).get('id');
+
+    async function fetchBookDetails() {
+      const res = await fetch(`/api/books/${bookId}`);
+      const book = await res.json();
+
+      document.getElementById('bookTitle').innerText = book.title;
+      document.getElementById('bookAuthor').innerText = book.author || 'Unknown Author';
+      document.getElementById('bookDescription').innerText = book.description || 'No description available.';
+      document.getElementById('bookRating').innerText = book.rating || 'N/A';
+      document.getElementById('bookCover').src = book.coverImage || 'https://via.placeholder.com/250x350?text=No+Cover';
+    }
+
+    document.getElementById('saveStatusBtn').addEventListener('click', async () => {
+      const status = document.getElementById('statusSelect').value;
+      const token = localStorage.getItem('token');
+
+      const res = await fetch('/api/books/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ bookId, status })
+      });
+
+      if (res.ok) {
+        alert('Status saved!');
+      } else {
+        alert('Failed to save status');
+      }
+    });
+
+    fetchBookDetails();
+  </script>
+</body>
+</html>

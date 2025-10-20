@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';  
+import bookRoutes from './routes/bookRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 
 // Hook Auth Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/books', bookRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
