@@ -7,7 +7,34 @@
   <link rel="stylesheet" href="/Stylesheets/bookshelf.css" />
   <link rel="icon" type="image/x-icon" href="/Images/logo_white.jpg">
 </head>
+
 <body>
+  <div class="hamburger" id="hamburger">&#9776;</div>
+
+  <div class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <img src="/Images/logo_white.jpg" alt="MobyLib Logo" class="menu-logo-img" />
+    </div>
+    <ul>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+      <li><a href="/profile.html">My Profile</a></li>
+      <li><a href="/login.html" id="logoutBtn">Sign out</a></li>
+    </ul>
+  </div>
+
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Search books..." />
+    <select id="sortSelect">
+      <option value="">Sort By</option>
+      <option value="high-to-low">High to Low</option>
+      <option value="low-to-high">Low to High</option>
+      <option value="title-az">Title (A → Z)</option>
+      <option value="title-za">Title (Z → A)</option>
+    </select>
+  </div>
+
   <h1>My Bookshelf</h1>
   <div id="bookshelfContainer"></div>
 

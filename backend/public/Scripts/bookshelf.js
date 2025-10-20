@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const container = document.getElementById('bookshelfContainer');
-
   const modal = document.getElementById('bookModal');
   const modalCover = document.getElementById('modalCover');
   const modalTitle = document.getElementById('modalTitle');
@@ -18,8 +17,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   const updateStatusBtn = document.getElementById('updateStatusBtn');
   const deleteBookBtn = document.getElementById('deleteBookBtn');
   const closeModal = document.getElementById('closeModal');
+  const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
 
   let currentBookId = null;
+  let bookshelfData = [];
+
+  // Linear search
+  function searchBooks(query, books) {
+    return books.filter(item =>
+      item.bookId.title.toLowerCase().includes(query.toLowerCase()) ||
+      (item.bookId.author && item.bookId.author.toLowerCase().includes(query.toLowerCase()))
+    );
+  }
+
+  // Bubble sort for ratings
+  function bubbleSortBooks(books, order = 'high-to-low') {
+    let arr = [...books];
+    let n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+      for (let j = 0; j < n - i - 1; j++) {
+        const r1 = parseFloat(arr[j].bookId.rating) || 0;
+        const r2 = parseFloat(arr[j + 1].bookId.rating) || 0;
+        if ((order === 'high-to-low' && r1 < r2) ||
+            (order === 'low-to-high' && r1 > r2)) {
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        }
+      }
+    }
+    return arr;
+  }
+
+  // Title sorting
+  function sortByTitle(books, order = 'az') {
+    let arr = [...books];
+    arr.sort((a, b) => {
+      const t1 = a.bookId.title.toLowerCase();
+      const t2 = b.bookId.title.toLowerCase();
+      if (t1 < t2) return order === 'az' ? -1 : 1;
+      if (t1 > t2) return order === 'az' ? 1 : -1;
+      return 0;
+    });
+    return arr;
+  }
 
   function closeModalFunc() {
     modal.style.display = 'none';
@@ -43,30 +83,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       const { bookshelf } = await res.json();
-      container.innerHTML = '';
-
-      if (!bookshelf || bookshelf.length === 0) {
-        container.innerHTML = '<p>No books in your bookshelf yet.</p>';
-        return;
-      }
-
-      bookshelf.forEach(item => {
-        const book = item.bookId;
-        if (!book) return;
-
-        const div = document.createElement('div');
-        div.classList.add('book-item');
-        div.innerHTML = `
-          <img src="${book.coverImage || 'https://via.placeholder.com/100x150'}" alt="${book.title}">
-          <h3>${book.title}</h3>
-          <p>${item.status}</p>
-        `;
-        div.addEventListener('click', () => openModal(book, item.status));
-        container.appendChild(div);
-      });
+      bookshelfData = bookshelf || [];
+      renderBookshelf(bookshelfData);
     } catch (err) {
       console.error('Error fetching bookshelf:', err);
     }
+  }
+
+  function renderBookshelf(books) {
+    container.innerHTML = '';
+
+    if (!books || books.length === 0) {
+      container.innerHTML = '<p>No books in your bookshelf yet.</p>';
+      return;
+    }
+
+    books.forEach(item => {
+      const book = item.bookId;
+      if (!book) return;
+
+      const div = document.createElement('div');
+      div.classList.add('book-item');
+      div.innerHTML = `
+        <img src="${book.coverImage || 'https://via.placeholder.com/100x150'}" alt="${book.title}">
+        <h3>${book.title}</h3>
+        <p>${item.status}</p>
+      `;
+      div.addEventListener('click', () => openModal(book, item.status));
+      container.appendChild(div);
+    });
   }
 
   function openModal(book, status) {
@@ -79,13 +124,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalRating.textContent = book.rating ?? 'N/A';
     modalDescription.textContent = book.description || 'No description available';
 
-    // status should already be in enum form: 'want-to-read', 'currently-reading', 'read'
-    // if not, try to normalize common variants
     const normalized = (status || '').toString().toLowerCase();
     if (['want-to-read', 'currently-reading', 'read'].includes(normalized)) {
       modalStatusSelect.value = normalized;
     } else {
-      // attempt to map some legacy/human strings if present
       if (normalized.includes('want')) modalStatusSelect.value = 'want-to-read';
       else if (normalized.includes('current') || normalized.includes('reading')) modalStatusSelect.value = 'currently-reading';
       else if (normalized.includes('read') || normalized.includes('finished')) modalStatusSelect.value = 'read';
@@ -96,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   updateStatusBtn.addEventListener('click', async () => {
-    const newStatus = modalStatusSelect.value; // this matches enum now
+    const newStatus = modalStatusSelect.value;
     if (!currentBookId) return;
 
     try {
@@ -150,5 +192,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Search event
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const filtered = searchBooks(e.target.value, bookshelfData);
+      renderBookshelf(filtered);
+    });
+  }
+
+  // Sort event
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      let sorted = bookshelfData;
+      if (e.target.value === 'high-to-low' || e.target.value === 'low-to-high') {
+        sorted = bubbleSortBooks(bookshelfData, e.target.value);
+      } else if (e.target.value === 'title-az') {
+        sorted = sortByTitle(bookshelfData, 'az');
+      } else if (e.target.value === 'title-za') {
+        sorted = sortByTitle(bookshelfData, 'za');
+      }
+      renderBookshelf(sorted);
+    });
+  }
+
   fetchBookshelf();
 });
+
+const hamburger = document.getElementById('hamburger');
+const sideMenu = document.getElementById('sideMenu');
+const menuOverlay = document.getElementById('menuOverlay');
+const logoutBtn = document.getElementById('logoutBtn');
+
+hamburger.addEventListener('click', () => {
+  sideMenu.classList.add('show');
+  menuOverlay.classList.add('show');
+});
+
+menuOverlay.addEventListener('click', () => {
+  sideMenu.classList.remove('show');
+  menuOverlay.classList.remove('show');
+});
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+  });
+}

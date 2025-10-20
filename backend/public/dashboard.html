@@ -9,7 +9,9 @@
 </head>
 <body>
   <header class="top-bar">
+
     <div class="hamburger" id="hamburger">&#9776;</div>
+
     <div class="user-info">
       <span id="greeting"></span>
       <img src="/Images/avatar_placeholder.png" alt="User Avatar" class="avatar" />
@@ -17,16 +19,19 @@
   </header>
 
   <!-- Sidebar Menu -->
-  <nav class="sidebar" id="sidebar">
-    <ul>
-      <li><a href="bookshelf.html">Bookshelf</a></li>
-      <li><a href="profile.html">My Profile</a></li>
-      <li id="logoutBtn">Sign Out</li>
-    </ul>
-  </nav>
+  <div class="side-menu" id="sideMenu">
+  <div class="menu-header">
+    <img src="/Images/logo_white.jpg" alt="MobyLib Logo" class="menu-logo-img" />
+  </div>
+  <ul>
+    <li><a href="/bookshelf.html">Bookshelf</a></li>
+    <li><a href="/profile.html">My Profile</a></li>
+    <li><a href="/login.html" id="logoutBtn">Sign out</a></li>
+  </ul>
+</div>
 
   <!-- Overlay to close sidebar -->
-  <div class="overlay" id="overlay"></div>
+<div class="menu-overlay" id="menuOverlay"></div>
 
   <main>
     <h1>Welcome to your MobyLib Dashboard</h1>
