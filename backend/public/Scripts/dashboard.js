@@ -9,18 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sidebar & logout
   const hamburger = document.getElementById('hamburger');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  const logoutBtn = document.getElementById('logoutBtn');
+  const sidebar = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
 
   hamburger.addEventListener('click', () => {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
+    sidebar.classList.add('show');
+    overlay.classList.add('show');
   });
 
   overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
   });
 
   logoutBtn.addEventListener('click', () => {
@@ -122,4 +121,5 @@ async function fetchBookshelf() {
   }
 }
 
+// Run on page load
 document.addEventListener('DOMContentLoaded', fetchBookshelf);

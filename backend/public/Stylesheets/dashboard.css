@@ -18,6 +18,7 @@ body {
   font-size: 28px;
   cursor: pointer;
   user-select: none;
+  z-index: 1001;
 }
 
 .user-info {
@@ -39,43 +40,77 @@ body {
   border: 1px solid #ccc;
 }
 
-/* Sidebar */
-.sidebar {
+.side-menu {
   position: fixed;
   top: 0;
-  left: -33%;
-  width: 23%;
-  height: 100%;
-  background-color: #f8f8f8;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  left: -260px;
+  width: 260px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  padding-top: 30px;
   transition: left 0.3s ease;
-  padding-top: 60px;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.sidebar.active {
+.menu-logo-img {
+  width: 80px;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Menu links */
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.side-menu ul li {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.side-menu ul li a {
+  text-decoration: none;
+  color: #222;
+  font-size: 18px;
+  display: block;
+  padding: 10px 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.side-menu ul li a:hover {
+  background-color: #c4c4c4;
+  color: #313131;
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+
+/* Active states */
+.side-menu.show {
   left: 0;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 20px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.sidebar li:hover {
-  background-color: #eaeaea;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: #333;
+.menu-overlay.show {
+  opacity: 1;
+  pointer-events: all;
 }
 
 #logoutBtn{
@@ -135,18 +170,4 @@ body {
 
 .book-card:hover {
   transform: scale(1.05);
-}
-
-#searchResults {
-  margin-top: 10px;
-}
-
-.book-result {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-}
-
-.book-result:hover {
-  background-color: #f0f0f0;
 }
