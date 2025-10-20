@@ -83,4 +83,42 @@ router.post('/status', auth, async (req, res) => {
   }
 });
 
+// PATCH /api/books/bookshelf/:bookId — update status of a book in bookshelf
+router.patch('/bookshelf/:bookId', auth, async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const { status } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const bookEntry = user.bookshelf.find(entry => entry.bookId.toString() === bookId);
+    if (!bookEntry) return res.status(404).json({ message: 'Book not found in bookshelf' });
+
+    bookEntry.status = status;
+    await user.save();
+
+    res.json({ message: 'Book status updated successfully' });
+  } catch (err) {
+    console.error('Error updating book status:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// DELETE /api/books/bookshelf/:bookId — delete book from bookshelf
+router.delete('/bookshelf/:bookId', auth, async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.bookshelf = user.bookshelf.filter(entry => entry.bookId.toString() !== bookId);
+    await user.save();
+
+    res.json({ message: 'Book removed successfully' });
+  } catch (err) {
+    console.error('Error deleting book:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 export default router;

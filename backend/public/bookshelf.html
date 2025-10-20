@@ -6,11 +6,32 @@
   <title>Bookshelf | MobyLib</title>
   <link rel="stylesheet" href="/Stylesheets/bookshelf.css" />
   <link rel="icon" type="image/x-icon" href="/Images/logo_white.jpg">
-  <style></style>
 </head>
 <body>
   <h1>My Bookshelf</h1>
   <div id="bookshelfContainer"></div>
+
+  <div id="bookModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <img id="modalCover" src="" alt="Book Cover" class="modal-cover">
+      <h2 id="modalTitle"></h2>
+      <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
+      <p><strong>Rating:</strong> <span id="modalRating"></span></p>
+      <p><strong>Description:</strong></p>
+      <p id="modalDescription"></p>
+
+      <div class="modal-actions">
+        <select id="modalStatusSelect">
+          <option value="want-to-read">Want to Read</option>
+          <option value="currently-reading">Currently Reading</option>
+          <option value="read">Read</option>
+        </select>
+        <button id="updateStatusBtn">Update Status</button>
+        <button id="deleteBookBtn">Delete Book</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/Scripts/bookshelf.js"></script>
 </body>
