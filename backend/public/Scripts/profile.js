@@ -2,14 +2,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullName = localStorage.getItem('fullName');
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!fullName || !token) {
+
+  if (!token || !user) {
     window.location.href = '/login.html';
     return;
   }
 
-  document.getElementById('userName').textContent = fullName;
-  document.getElementById('userEmail').textContent = email || 'Not available';
+  document.getElementById('userName').textContent = user.fullName || 'User Name';
+  document.getElementById('userEmail').textContent = user.email || 'Email not available';
 
   const hamburger = document.getElementById('hamburger');
   const sideMenu = document.getElementById('sideMenu');
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('want-to-read').textContent = wantToRead;
     document.getElementById('currently-reading').textContent = reading;
     document.getElementById('read').textContent = read;
-    document.getElementById('favoriteBooks').textContent = favorites; // <-- Add this line
+    document.getElementById('favoriteBooks').textContent = favorites; 
 
   } catch (err) {
     console.error('Error fetching stats:', err);
