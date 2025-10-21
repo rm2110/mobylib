@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   if (!token) {
-    console.error('No token found');
     window.location.href = '/login.html';
     return;
   }
@@ -16,11 +15,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalStatusSelect = document.getElementById('modalStatusSelect');
   const updateStatusBtn = document.getElementById('updateStatusBtn');
   const deleteBookBtn = document.getElementById('deleteBookBtn');
+  const favoriteBookBtn = document.getElementById('favoriteBookBtn');
   const closeModal = document.getElementById('closeModal');
   const searchInput = document.getElementById('searchInput');
   const sortSelect = document.getElementById('sortSelect');
 
   let currentBookId = null;
+  let currentBookStatus = null;
   let bookshelfData = [];
 
   // Linear search
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function closeModalFunc() {
     modal.style.display = 'none';
     currentBookId = null;
+    currentBookStatus = null;
   }
 
   closeModal.addEventListener('click', closeModalFunc);
@@ -76,12 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await fetch('/api/books/bookshelf', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      if (!res.ok) {
-        console.error('Failed to fetch bookshelf:', await res.text());
-        return;
-      }
-
+      if (!res.ok) throw new Error(await res.text());
       const { bookshelf } = await res.json();
       bookshelfData = bookshelf || [];
       renderBookshelf(bookshelfData);
@@ -106,17 +103,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       div.classList.add('book-item');
       div.innerHTML = `
         <img src="${book.coverImage || 'https://via.placeholder.com/100x150'}" alt="${book.title}">
-        <h3>${book.title}</h3>
+        <h3>${book.title} ${item.favorite ? '❤️' : ''}</h3>
         <p>${item.status}</p>
       `;
-      div.addEventListener('click', () => openModal(book, item.status));
+
+      div.addEventListener('click', () => openModal(item));
       container.appendChild(div);
     });
   }
 
-  function openModal(book, status) {
+  function openModal(item) {
+    const book = item.bookId;
     if (!book || !book._id) return;
     currentBookId = book._id;
+    currentBookStatus = item.status;
 
     modalCover.src = book.coverImage || 'https://via.placeholder.com/120x180';
     modalTitle.textContent = book.title || 'Untitled';
@@ -124,17 +124,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalRating.textContent = book.rating ?? 'N/A';
     modalDescription.textContent = book.description || 'No description available';
 
-    const normalized = (status || '').toString().toLowerCase();
-    if (['want-to-read', 'currently-reading', 'read'].includes(normalized)) {
-      modalStatusSelect.value = normalized;
+    modalStatusSelect.value = item.status || 'want-to-read';
+    modal.style.display = 'flex';
+
+    // Enable favorite button only for "read" books
+    if (currentBookStatus === 'read') {
+      favoriteBookBtn.disabled = false;
+      favoriteBookBtn.style.opacity = '1';
+      favoriteBookBtn.textContent = item.favorite ? 'Remove from Favorites' : 'Mark as Favorite';
     } else {
-      if (normalized.includes('want')) modalStatusSelect.value = 'want-to-read';
-      else if (normalized.includes('current') || normalized.includes('reading')) modalStatusSelect.value = 'currently-reading';
-      else if (normalized.includes('read') || normalized.includes('finished')) modalStatusSelect.value = 'read';
-      else modalStatusSelect.value = 'want-to-read';
+      favoriteBookBtn.disabled = true;
+      favoriteBookBtn.style.opacity = '0.6';
+      favoriteBookBtn.textContent = 'Mark as Favorite';
     }
 
-    modal.style.display = 'flex';
+    favoriteBookBtn.onclick = async () => {
+      if (currentBookStatus !== 'read') return;
+
+      const isCurrentlyFavorite = item.favorite === true;
+      const newFavoriteState = !isCurrentlyFavorite;
+
+      try {
+        const res = await fetch(`/api/books/bookshelf/${currentBookId}/favorite`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ favorite: newFavoriteState })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to update favorite');
+
+        closeModalFunc();
+        fetchBookshelf();
+      } catch (err) {
+        console.error('Favorite update failed:', err);
+        alert('Error updating favorite');
+      }
+    };
   }
 
   updateStatusBtn.addEventListener('click', async () => {
@@ -151,44 +180,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify({ status: newStatus })
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('Failed to update status:', res.status, text);
-        alert('Failed to update status. See console for details.');
-        return;
-      }
-
+      if (!res.ok) throw new Error(await res.text());
       alert('Status updated successfully');
       closeModalFunc();
       fetchBookshelf();
     } catch (err) {
       console.error('Error updating status:', err);
-      alert('Error updating status. See console for details.');
+      alert('Error updating status');
     }
   });
 
   deleteBookBtn.addEventListener('click', async () => {
     if (!currentBookId) return;
-    if (!confirm('Are you sure you want to delete this book from your bookshelf?')) return;
+    if (!confirm('Are you sure you want to delete this book?')) return;
 
     try {
       const res = await fetch(`/api/books/bookshelf/${currentBookId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('Failed to delete book:', res.status, text);
-        alert('Failed to delete book. See console for details.');
-        return;
-      }
-
+      if (!res.ok) throw new Error(await res.text());
       closeModalFunc();
       fetchBookshelf();
     } catch (err) {
       console.error('Error deleting book:', err);
-      alert('Error deleting book. See console for details.');
+      alert('Error deleting book');
     }
   });
 
@@ -210,6 +226,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         sorted = sortByTitle(bookshelfData, 'az');
       } else if (e.target.value === 'title-za') {
         sorted = sortByTitle(bookshelfData, 'za');
+      } else if (e.target.value === 'favorite') {
+        sorted = bookshelfData.filter(b => b.favorite === true);
       }
       renderBookshelf(sorted);
     });
@@ -218,6 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchBookshelf();
 });
 
+// Hamburger
 const hamburger = document.getElementById('hamburger');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
@@ -227,12 +246,10 @@ hamburger.addEventListener('click', () => {
   sideMenu.classList.add('show');
   menuOverlay.classList.add('show');
 });
-
 menuOverlay.addEventListener('click', () => {
   sideMenu.classList.remove('show');
   menuOverlay.classList.remove('show');
 });
-
 if (logoutBtn) {
   logoutBtn.addEventListener('click', (e) => {
     e.preventDefault();
