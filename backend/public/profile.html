@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile | MobyLib</title>
+  <link rel="stylesheet" href="/Stylesheets/profile.css" />
+  <link rel="icon" type="image/x-icon" href="/Images/logo_white.jpg">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <div class="user-info"></div>
+  </header>
+
+  <div class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <img src="/Images/logo_white.jpg" alt="MobyLib Logo" class="menu-logo-img" />
+    </div>
+    <ul>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+      <li><a href="/bookshelf.html">Bookshelf</a></li>
+      <li><a href="/login.html" id="logoutBtn">Sign out</a></li>
+    </ul>
+  </div>
+
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <main class="profile-container">
+    <div class="profile-card">
+      <div class="profile-left">
+        <img id="profilePhoto" src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" alt="Profile Photo" class="profile-photo">
+        <h2 id="userName">User Name</h2>
+        <p id="userEmail">user@example.com</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <h3 id="totalBooks">0</h3>
+          <p>Total Books</p>
+        </div>
+        <div class="stat">
+          <h3 id="want-to-read">0</h3>
+          <p>Want to Read</p>
+        </div>
+        <div class="stat">
+          <h3 id="currently-reading">0</h3>
+          <p>Currently Reading</p>
+        </div>
+        <div class="stat">
+          <h3 id="read">0</h3>
+          <p>Read</p>
+        </div>
+        <div class="stat">
+          <h3 id="favoriteBooks">0</h3>
+          <p>Favorites</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/Scripts/profile.js"></script>
+</body>
+</html>

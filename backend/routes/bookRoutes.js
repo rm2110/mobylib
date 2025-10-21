@@ -95,9 +95,13 @@ router.patch('/bookshelf/:bookId', auth, async (req, res) => {
     if (!bookEntry) return res.status(404).json({ message: 'Book not found in bookshelf' });
 
     bookEntry.status = status;
-    await user.save();
 
-    res.json({ message: 'Book status updated successfully' });
+    if (status !== 'read') {
+      bookEntry.favorite = false;
+    }
+
+    await user.save();
+    res.json({ message: 'Book status updated successfully', status: bookEntry.status, favorite: bookEntry.favorite });
   } catch (err) {
     console.error('Error updating book status:', err);
     res.status(500).json({ message: 'Server error' });
@@ -120,5 +124,32 @@ router.delete('/bookshelf/:bookId', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Mark or unmark a book as favorite
+router.patch("/bookshelf/:bookId/favorite", auth, async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const { favorite } = req.body;
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const bookEntry = user.bookshelf.find(entry => entry.bookId.toString() === bookId);
+    if (!bookEntry) return res.status(404).json({ message: "Book not found in bookshelf" });
+
+    if (favorite && bookEntry.status !== 'read') {
+      return res.status(400).json({ message: 'Only "read" books can be marked as favorite' });
+    }
+
+    bookEntry.favorite = favorite;
+    await user.save();
+
+    res.json({ message: "Favorite status updated successfully", favorite: bookEntry.favorite });
+  } catch (err) {
+    console.error("Error updating favorite:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 export default router;
