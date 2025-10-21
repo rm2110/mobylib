@@ -17,17 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
+        // Store token and user name in localStorage
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user)); 
+        localStorage.setItem('fullName', data.user.fullName);
+
+        // Redirect to dashboard (no alert here)
         window.location.href = '/dashboard.html';
       } else {
-        alert(data.message);
+        alert(data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);
