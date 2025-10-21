@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('userName').textContent = fullName;
-  document.getElementById('userEmail').textContent = email || 'Not available';
 
   const hamburger = document.getElementById('hamburger');
   const sideMenu = document.getElementById('sideMenu');

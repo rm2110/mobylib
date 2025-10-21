@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// =================== Live Search ===================
+// Live Search 
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('bookSearch');
   const searchResults = document.getElementById('searchResults');

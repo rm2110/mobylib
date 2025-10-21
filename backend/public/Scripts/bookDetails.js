@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('bookTitle').textContent = book.title;
     document.getElementById('bookAuthor').textContent = book.author;
     document.getElementById('bookDescription').textContent = book.description || 'No description available';
-    document.getElementById('bookImage').src = book.coverImage || 'https://via.placeholder.com/200x300?text=No+Cover';
+    document.getElementById('bookImage').src = book.coverImage || 'https://placehold.co/200x300/png';
 
     // Save reading status
     document.getElementById('saveStatusBtn').addEventListener('click', async () => {
