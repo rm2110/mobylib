@@ -1,6 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Nata+Sans:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Nata Sans", sans-serif;
   background-color: #f9f9f9;
   color: #333;
 }

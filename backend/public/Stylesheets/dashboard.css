@@ -1,8 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Nata+Sans:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Nata Sans", sans-serif;
   background-color: #ffffff;
   color: #333;
+}
+
+h1 {
+  margin-left: 5%;
+}
+
+#greeting {
+  font-weight: bold;
 }
 
 .top-bar {
@@ -155,6 +164,11 @@ body {
 #bookSearch {
   padding: 10px;
   width: 300px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid #000;
+  font-family: "Nata Sans", sans-serif;
 }
 
 .results-grid {
@@ -164,7 +178,7 @@ body {
   padding: 20px;
 }
 
-.book-card {
+.book-result {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
@@ -174,6 +188,24 @@ body {
   transition: transform 0.2s ease;
 }
 
-.book-card:hover {
+.book-result:hover {
   transform: scale(1.05);
+}
+
+#searchBtn {
+  background-color: #242424;
+  margin-left: 10px;
+  transition: 0.5s;
+  border-radius: 10%;
+  color: #fff;
+  border: none;
+  font-family: "Nata Sans", sans-serif;
+}
+
+#searchBtn:hover {
+  opacity: 0.5;
+  cursor: pointer;
+  transition: 0.5s;
+  background-color: #c4c4c4;
+  color: #000000;
 }
