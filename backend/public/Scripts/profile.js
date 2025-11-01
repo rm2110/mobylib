@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('userName').textContent = fullName;
 
+  // Hamburger menu
   const hamburger = document.getElementById('hamburger');
   const sideMenu = document.getElementById('sideMenu');
   const menuOverlay = document.getElementById('menuOverlay');
@@ -41,22 +42,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!res.ok) throw new Error('Failed to fetch bookshelf data');
 
     const { bookshelf } = await res.json();
-    const total = bookshelf.length;
-    const wantToRead = bookshelf.filter(b => b.status === 'want-to-read').length;
-    const reading = bookshelf.filter(b => b.status === 'currently-reading').length;
-    const read = bookshelf.filter(b => b.status === 'read').length;
-    const favorites = bookshelf.filter(b => b.favorite === true).length;
+    const validBooks = bookshelf.filter(b => b.bookId);
 
-    document.getElementById('totalBooks').textContent = total;
+    const wantToRead = validBooks.filter(b => b.status === 'want-to-read').length;
+    const reading = validBooks.filter(b => b.status === 'currently-reading').length;
+    const read = validBooks.filter(b => b.status === 'read').length;
+    const favorites = validBooks.filter(b => b.favorite === true).length;
+
+    document.getElementById('totalBooks').textContent = validBooks.length;
     document.getElementById('want-to-read').textContent = wantToRead;
     document.getElementById('currently-reading').textContent = reading;
     document.getElementById('read').textContent = read;
-    document.getElementById('favoriteBooks').textContent = favorites; // <-- Add this line
+    document.getElementById('favoriteBooks').textContent = favorites;
 
   } catch (err) {
     console.error('Error fetching stats:', err);
   }
 });
-
-const favorites = bookshelf.filter(item => item.favorite).length;
-document.getElementById('favoriteBooks').textContent = favorites;

@@ -151,5 +151,18 @@ router.patch("/bookshelf/:bookId/favorite", auth, async (req, res) => {
   }
 });
 
+export const getBookshelf = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .populate('bookshelf.bookId');
+
+    // Filter out entries with missing or deleted bookId
+    const validBookshelf = user.bookshelf.filter(b => b.bookId);
+
+    res.json({ bookshelf: validBookshelf });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 export default router;
