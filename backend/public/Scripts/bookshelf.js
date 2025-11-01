@@ -23,43 +23,98 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentBookId = null;
   let currentBookStatus = null;
   let bookshelfData = [];
+  let invertedIndex = {};
 
-  // Linear search
-  function searchBooks(query, books) {
-    return books.filter(item =>
-      item.bookId.title.toLowerCase().includes(query.toLowerCase()) ||
-      (item.bookId.author && item.bookId.author.toLowerCase().includes(query.toLowerCase()))
-    );
+  // Inverted index creation
+  function createInvertedIndex(books) {
+    const index = {};
+    books.forEach(book => {
+      if (!book.bookId) return;
+      const words = (book.bookId.title + " " + (book.bookId.author || "")).toLowerCase().split(/\W+/);
+      words.forEach(word => {
+        if (!word) return;
+        if (!index[word]) index[word] = [];
+        index[word].push(book);
+      });
+    });
+    return index;
   }
 
-  // Bubble sort for ratings
-  function bubbleSortBooks(books, order = 'high-to-low') {
-    let arr = [...books];
-    let n = arr.length;
-    for (let i = 0; i < n - 1; i++) {
-      for (let j = 0; j < n - i - 1; j++) {
-        const r1 = parseFloat(arr[j].bookId.rating) || 0;
-        const r2 = parseFloat(arr[j + 1].bookId.rating) || 0;
-        if ((order === 'high-to-low' && r1 < r2) ||
-            (order === 'low-to-high' && r1 > r2)) {
-          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-        }
+  function searchBooks(query) {
+    if (!query.trim()) return bookshelfData;
+    const results = new Set();
+    const words = query.toLowerCase().split(/\W+/);
+    words.forEach(word => {
+      const matches = invertedIndex[word];
+      if (matches) matches.forEach(b => results.add(b));
+    });
+    return Array.from(results);
+  }
+
+  // Power sort for rating
+  function powerSortBooks(books, order = 'high-to-low') {
+    const arr = [...books];
+    const n = arr.length;
+    if (n <= 1) return arr;
+
+    const compare = (a, b) => {
+      const r1 = parseFloat(a.bookId?.rating) || 0;
+      const r2 = parseFloat(b.bookId?.rating) || 0;
+      return order === 'high-to-low' ? r2 - r1 : r1 - r2;
+    };
+
+    let runs = [];
+    let i = 0;
+    while (i < n) {
+      let start = i++;
+      if (i < n && compare(arr[i - 1], arr[i]) > 0) {
+        while (i < n && compare(arr[i - 1], arr[i]) > 0) i++;
+        runs.push({ start, end: i, descending: true });
+      } else {
+        while (i < n && compare(arr[i - 1], arr[i]) <= 0) i++;
+        runs.push({ start, end: i, descending: false });
       }
     }
+
+    for (const run of runs) {
+      if (run.descending) {
+        const sub = arr.slice(run.start, run.end).reverse();
+        arr.splice(run.start, run.end - run.start, ...sub);
+      }
+    }
+
+    function merge(left, right) {
+      let result = [];
+      while (left.length && right.length) {
+        if (compare(left[0], right[0]) <= 0) result.push(left.shift());
+        else result.push(right.shift());
+      }
+      return [...result, ...left, ...right];
+    }
+
+    while (runs.length > 1) {
+      const run1 = runs.shift();
+      const run2 = runs.shift();
+      const merged = merge(
+        arr.slice(run1.start, run1.end),
+        arr.slice(run2.start, run2.end)
+      );
+      arr.splice(run1.start, merged.length, ...merged);
+      runs.unshift({ start: run1.start, end: run1.start + merged.length });
+    }
+
     return arr;
   }
 
   // Title sorting
   function sortByTitle(books, order = 'az') {
-    let arr = [...books];
-    arr.sort((a, b) => {
-      const t1 = a.bookId.title.toLowerCase();
-      const t2 = b.bookId.title.toLowerCase();
+    return [...books].sort((a, b) => {
+      const t1 = a.bookId?.title?.toLowerCase() || '';
+      const t2 = b.bookId?.title?.toLowerCase() || '';
       if (t1 < t2) return order === 'az' ? -1 : 1;
       if (t1 > t2) return order === 'az' ? 1 : -1;
       return 0;
     });
-    return arr;
   }
 
   function closeModalFunc() {
@@ -73,20 +128,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target === modal) closeModalFunc();
   });
 
+  // Fetch bookshelf
   async function fetchBookshelf() {
-    try {
-      const res = await fetch('/api/books/bookshelf', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const { bookshelf } = await res.json();
-      bookshelfData = bookshelf || [];
-      renderBookshelf(bookshelfData);
-    } catch (err) {
-      console.error('Error fetching bookshelf:', err);
-    }
-  }
+  try {
+    const res = await fetch('/api/books/bookshelf', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const { bookshelf } = await res.json();
 
+    // Filter out null or invalid bookId entries
+    bookshelfData = (bookshelf || []).filter(item => item.bookId && item.bookId.title);
+
+    if (bookshelfData.length === 0) {
+      container.innerHTML = '<p>No books in your bookshelf yet.</p>';
+      return;
+    }
+
+    // Rebuild search index only for valid books
+    index = createInvertedIndex(bookshelfData);
+
+    // Render bookshelf
+    setTimeout(() => renderBookshelf(bookshelfData), 100);
+  } catch (err) {
+    console.error('Error fetching bookshelf:', err);
+  }
+}
+
+  // Render bookshelf
   function renderBookshelf(books) {
     container.innerHTML = '';
 
@@ -106,12 +175,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         <h3>${book.title} ${item.favorite ? '❤️' : ''}</h3>
         <p>${item.status}</p>
       `;
-
       div.addEventListener('click', () => openModal(item));
       container.appendChild(div);
     });
   }
 
+  // Modal open
   function openModal(item) {
     const book = item.bookId;
     if (!book || !book._id) return;
@@ -123,11 +192,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalAuthor.textContent = book.author || 'Unknown Author';
     modalRating.textContent = book.rating ?? 'N/A';
     modalDescription.textContent = book.description || 'No description available';
-
     modalStatusSelect.value = item.status || 'want-to-read';
     modal.style.display = 'flex';
 
-    // Enable favorite button only for "read" books
     if (currentBookStatus === 'read') {
       favoriteBookBtn.disabled = false;
       favoriteBookBtn.style.opacity = '1';
@@ -140,9 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     favoriteBookBtn.onclick = async () => {
       if (currentBookStatus !== 'read') return;
-
-      const isCurrentlyFavorite = item.favorite === true;
-      const newFavoriteState = !isCurrentlyFavorite;
+      const newFavoriteState = !item.favorite;
 
       try {
         const res = await fetch(`/api/books/bookshelf/${currentBookId}/favorite`, {
@@ -154,9 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify({ favorite: newFavoriteState })
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to update favorite');
-
+        if (!res.ok) throw new Error(await res.text());
         closeModalFunc();
         fetchBookshelf();
       } catch (err) {
@@ -166,6 +229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
   }
 
+  // Update status
   updateStatusBtn.addEventListener('click', async () => {
     const newStatus = modalStatusSelect.value;
     if (!currentBookId) return;
@@ -190,6 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Delete book
   deleteBookBtn.addEventListener('click', async () => {
     if (!currentBookId) return;
     if (!confirm('Are you sure you want to delete this book?')) return;
@@ -208,25 +273,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Search event
+  // Search
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
-      const filtered = searchBooks(e.target.value, bookshelfData);
-      renderBookshelf(filtered);
+      const query = e.target.value.trim();
+      const results = searchBooks(query);
+      renderBookshelf(results);
     });
   }
 
-  // Sort event
+  // Sort
   if (sortSelect) {
     sortSelect.addEventListener('change', (e) => {
       let sorted = bookshelfData;
-      if (e.target.value === 'high-to-low' || e.target.value === 'low-to-high') {
-        sorted = bubbleSortBooks(bookshelfData, e.target.value);
-      } else if (e.target.value === 'title-az') {
+      const val = e.target.value;
+
+      if (val === 'high-to-low' || val === 'low-to-high') {
+        sorted = powerSortBooks(bookshelfData, val);
+      } else if (val === 'title-az') {
         sorted = sortByTitle(bookshelfData, 'az');
-      } else if (e.target.value === 'title-za') {
+      } else if (val === 'title-za') {
         sorted = sortByTitle(bookshelfData, 'za');
-      } else if (e.target.value === 'favorite') {
+      } else if (val === 'favorite') {
         sorted = bookshelfData.filter(b => b.favorite === true);
       }
       renderBookshelf(sorted);
@@ -236,7 +304,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchBookshelf();
 });
 
-// Hamburger
+// Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
