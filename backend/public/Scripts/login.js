@@ -1,4 +1,3 @@
-// Show logout message if redirected from dashboard
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('loggedOut') === 'true') {
   alert('Successfully logged out.');
@@ -23,11 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (res.ok) {
-        // Store token and user name in localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('fullName', data.user.fullName);
 
-        // Redirect to dashboard (no alert here)
         window.location.href = '/dashboard.html';
       } else {
         alert(data.message || 'Login failed');
