@@ -1,4 +1,3 @@
-// seedBooks.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Book from './models/book.js';
