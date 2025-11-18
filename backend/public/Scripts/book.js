@@ -1,4 +1,3 @@
-// /Scripts/book.js
 document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   const urlParams = new URLSearchParams(window.location.search);
