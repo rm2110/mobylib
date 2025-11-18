@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-// Auth middleware
 function auth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ message: 'No token provided' });
@@ -20,7 +19,6 @@ function auth(req, res, next) {
   }
 }
 
-// GET /api/books — search books by title
 router.get('/', async (req, res) => {
   try {
     const query = req.query.q?.trim();
@@ -33,7 +31,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/books/bookshelf — fetch user’s bookshelf
 router.get('/bookshelf', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('bookshelf.bookId');
@@ -45,7 +42,6 @@ router.get('/bookshelf', auth, async (req, res) => {
   }
 });
 
-// GET /api/books/:id — get book details
 router.get('/:id', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -57,7 +53,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/books/status — add/update a book’s status
 router.post('/status', auth, async (req, res) => {
   try {
     const { bookId, status } = req.body;
@@ -83,7 +78,6 @@ router.post('/status', auth, async (req, res) => {
   }
 });
 
-// PATCH /api/books/bookshelf/:bookId — update status of a book in bookshelf
 router.patch('/bookshelf/:bookId', auth, async (req, res) => {
   try {
     const { bookId } = req.params;
@@ -108,7 +102,6 @@ router.patch('/bookshelf/:bookId', auth, async (req, res) => {
   }
 });
 
-// DELETE /api/books/bookshelf/:bookId — delete book from bookshelf
 router.delete('/bookshelf/:bookId', auth, async (req, res) => {
   try {
     const { bookId } = req.params;
@@ -125,7 +118,6 @@ router.delete('/bookshelf/:bookId', auth, async (req, res) => {
   }
 });
 
-// Mark or unmark a book as favorite
 router.patch("/bookshelf/:bookId/favorite", auth, async (req, res) => {
   try {
     const { bookId } = req.params;
@@ -156,7 +148,6 @@ export const getBookshelf = async (req, res) => {
     const user = await User.findById(req.user.id)
       .populate('bookshelf.bookId');
 
-    // Filter out entries with missing or deleted bookId
     const validBookshelf = user.bookshelf.filter(b => b.bookId);
 
     res.json({ bookshelf: validBookshelf });
