@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('userName').textContent = fullName;
 
-  // Hamburger menu
   const hamburger = document.getElementById('hamburger');
   const sideMenu = document.getElementById('sideMenu');
   const menuOverlay = document.getElementById('menuOverlay');
