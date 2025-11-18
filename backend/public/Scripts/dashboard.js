@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('greeting').textContent = `Hi, ${fullName}`;
 
-  // Sidebar & logout
   const hamburger = document.getElementById('hamburger');
   const sidebar = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Live Search 
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('bookSearch');
   const searchResults = document.getElementById('searchResults');
@@ -70,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Bookshelf Fetch
 async function fetchBookshelf() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -121,5 +118,4 @@ async function fetchBookshelf() {
   }
 }
 
-// Run on page load
 document.addEventListener('DOMContentLoaded', fetchBookshelf);
