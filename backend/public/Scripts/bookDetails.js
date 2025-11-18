@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('bookDescription').textContent = book.description || 'No description available';
     document.getElementById('bookImage').src = book.coverImage || 'https://placehold.co/200x300/png';
 
-    // Save reading status
     document.getElementById('saveStatusBtn').addEventListener('click', async () => {
       const status = document.getElementById('bookStatus').value;
       const token = localStorage.getItem('token');
