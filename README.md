@@ -1,10 +1,10 @@
-# 📚 MobyLib
+# MobyLib
 
 MobyLib is a full-stack book tracking web application that helps users organize and manage their personal reading journey. Users can search books, maintain a digital bookshelf, track reading progress, mark favorite books, and view personalized reading statistics through an intuitive dashboard.
 
 ---
 
-## 🚀 Features
+## Features
 
 ### User Authentication
 
@@ -60,7 +60,7 @@ MobyLib is a full-stack book tracking web application that helps users organize 
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 Frontend (React.js)
 ⬇
@@ -72,7 +72,7 @@ MongoDB Database
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -105,7 +105,7 @@ MongoDB Database
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 MobyLib
 
@@ -185,7 +185,7 @@ This populates MongoDB with sample books, ratings, descriptions, and cover image
 
 ---
 
-## ▶️ Running the Application
+## Running the Application
 
 ### Start Backend
 
@@ -211,7 +211,7 @@ http://localhost:3000
 
 ---
 
-## 🔑 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -257,7 +257,7 @@ Toggle favorite status.
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
 * Password hashing with bcrypt
 * JWT authentication
@@ -267,37 +267,7 @@ Toggle favorite status.
 
 ---
 
-## 📈 Future Improvements
-
-* Book recommendations using machine learning
-* Reading streak tracking
-* Social features and book sharing
-* Review and rating system
-* User profile pictures
-* Advanced search and filtering
-* Dark mode support
-* Responsive mobile application
-
----
-
-## 🎯 Learning Outcomes
-
-This project demonstrates:
-
-* Full-Stack Web Development
-* REST API Design
-* React State Management
-* React Hooks (useState, useEffect)
-* React Router Navigation
-* JWT Authentication
-* MongoDB Database Design
-* CRUD Operations
-* Client-Server Architecture
-* Responsive UI Development
-
----
-
-## 👨‍💻 Author
+## Authors
 
 * Rishi Jyotirmay Mahajan
 * Vimal Suresh P
