@@ -1,86 +1,303 @@
-# MobyLib: Track Books, Stay Inspired
-MobyLib is a full-stack web application designed to help users organize, track, and manage their personal bookshelf.
+# 📚 MobyLib
+
+MobyLib is a full-stack book tracking web application that helps users organize and manage their personal reading journey. Users can search books, maintain a digital bookshelf, track reading progress, mark favorite books, and view personalized reading statistics through an intuitive dashboard.
 
 ---
 
-# Features
+## 🚀 Features
 
-* #### User Management
+### User Authentication
 
-  * Secure JWT-based authentication (Signup / Login / Logout).
-  * Personalized user profile with name, email, and bookshelf stats.
-  
-* #### Bookshelf Management
+* Secure user registration and login
+* Password hashing using bcrypt
+* JWT-based authentication
+* Protected routes for authenticated users
 
-  * Add, update, and remove books from your collection.
-  * Track reading progress with statuses:
-    * Want to Read
-    * Currently Reading
-    * Read
-  * Mark books as Favorites (only for “Read” books).
-  
-* #### Smart Search
+### Book Search
 
-  * Inverted Index Search Algorithm for fast, local book lookups.
-  * Real-time suggestions while typing.
-  
-* #### Intelligent Sorting
+* Search books by title
+* Real-time search functionality
+* Dynamic result display
+* Detailed book information page
 
-  * PowerSort Algorithm for adaptive, high-performance sorting based on book ratings or titles.
-  * Supports both ascending and descending order.
-  
-* #### Profile Dashboard
+### Personal Bookshelf
 
-  * Displays real-time stats:
-    * Total books
-    * Books per reading status
-    * Favorite books count
-   
-* #### Persistent Storage
+* Add books to personal bookshelf
+* Track reading status:
 
-  * MongoDB database for all user and book data.
-  * Data automatically synced to each user’s account.
+  * Want to Read
+  * Currently Reading
+  * Read
+* Update reading status anytime
+* Remove books from bookshelf
+* Mark completed books as favorites
+
+### Dashboard
+
+* Personalized user greeting
+* Book search interface
+* Quick navigation to bookshelf and profile
+
+### Profile Statistics
+
+* Total books tracked
+* Want-to-read count
+* Currently-reading count
+* Read books count
+* Favorite books count
+
+### Bookshelf Management
+
+* Search within bookshelf
+* Sort books by:
+
+  * Rating (High → Low)
+  * Rating (Low → High)
+  * Title (A → Z)
+  * Title (Z → A)
+  * Favorites
+* Detailed modal view for each book
+
 ---
 
-# Tech Stack
+## 🏗️ System Architecture
 
-- **Frontend:** HTML, CSS, Vanilla JavaScript
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB 
-- **Authentication:** JSON Web Tokens (JWT)
-- **Other Tools:**  REST APIs, Git/GitHub
+Frontend (React.js)
+⬇
+Axios API Calls
+⬇
+Node.js + Express.js Backend
+⬇
+MongoDB Database
 
 ---
 
-# Installation & Setup
+## 🛠️ Tech Stack
 
-1. #### Clone the repository:
+### Frontend
 
+* React.js
+* React Router DOM
+* Axios
+* CSS3
 
-   ```bash
-   git clone https://github.com/your-username/mobylib.git
-   cd mobylib
-   ```
-2. #### Install dependencies:
+### Backend
 
-   ``bash npm install ``
+* Node.js
+* Express.js
 
-3. #### Setup environment variables:
-   Create a .env file inside /backend with:
-   ```
-       MONGO_URI=mongodb://127.0.0.1:27017/mobylib
-       JWT_SECRET=yourSecretKey
-       PORT=5000
-   ```
-4. #### Seed the database:
-   ```
-     node backend/bookSeed.js
-   ```
-5. #### Run the server:
-   ```
-     npm start
-   ```
-6. #### Access the app:
-   ```
-     http://localhost:5000
-   ```
+### Database
+
+* MongoDB
+* Mongoose
+
+### Authentication
+
+* JSON Web Tokens (JWT)
+* bcrypt.js
+
+### Development Tools
+
+* Git
+* VS Code
+* MongoDB Compass
+* Postman
+
+---
+
+## 📂 Project Structure
+
+MobyLib
+
+frontend/
+├── public/
+│   └── Images/
+├── src/
+│   ├── pages/
+│   │   ├── Home.js
+│   │   ├── Login.js
+│   │   ├── Signup.js
+│   │   ├── Dashboard.js
+│   │   ├── Bookshelf.js
+│   │   ├── Profile.js
+│   │   └── BookDetails.js
+│   ├── App.js
+│   └── index.js
+
+backend/
+├── models/
+│   ├── User.js
+│   └── Book.js
+├── routes/
+│   ├── authRoutes.js
+│   └── bookRoutes.js
+├── seedBooks.js
+├── server.js
+└── .env
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone Repository
+
+git clone <repository-url>
+
+cd mobylib
+
+---
+
+### 2. Install Backend Dependencies
+
+cd backend
+
+npm install
+
+---
+
+### 3. Install Frontend Dependencies
+
+cd ../frontend
+
+npm install
+
+---
+
+### 4. Configure Environment Variables
+
+Create a .env file inside backend/
+
+MONGO_URI=your_mongodb_connection_string
+
+JWT_SECRET=your_secret_key
+
+PORT=5000
+
+---
+
+### 5. Seed Database
+
+Navigate to backend folder:
+
+node seedBooks.js
+
+This populates MongoDB with sample books, ratings, descriptions, and cover images.
+
+---
+
+## ▶️ Running the Application
+
+### Start Backend
+
+cd backend
+
+npm start
+
+Server runs at:
+
+http://localhost:5000
+
+---
+
+### Start Frontend
+
+cd frontend
+
+npm start
+
+Application runs at:
+
+http://localhost:3000
+
+---
+
+## 🔑 API Endpoints
+
+### Authentication
+
+POST /api/auth/signup
+
+Create a new user account.
+
+POST /api/auth/login
+
+Authenticate user and return JWT token.
+
+---
+
+### Books
+
+GET /api/books?q=searchTerm
+
+Search books by title.
+
+GET /api/books/:id
+
+Fetch details of a specific book.
+
+POST /api/books/status
+
+Add a book to user's bookshelf.
+
+GET /api/books/bookshelf
+
+Retrieve user's bookshelf.
+
+PATCH /api/books/bookshelf/:bookId
+
+Update reading status.
+
+DELETE /api/books/bookshelf/:bookId
+
+Remove book from bookshelf.
+
+PATCH /api/books/bookshelf/:bookId/favorite
+
+Toggle favorite status.
+
+---
+
+## 🔒 Security Features
+
+* Password hashing with bcrypt
+* JWT authentication
+* Protected API routes
+* Authorization middleware
+* Secure user-specific bookshelf access
+
+---
+
+## 📈 Future Improvements
+
+* Book recommendations using machine learning
+* Reading streak tracking
+* Social features and book sharing
+* Review and rating system
+* User profile pictures
+* Advanced search and filtering
+* Dark mode support
+* Responsive mobile application
+
+---
+
+## 🎯 Learning Outcomes
+
+This project demonstrates:
+
+* Full-Stack Web Development
+* REST API Design
+* React State Management
+* React Hooks (useState, useEffect)
+* React Router Navigation
+* JWT Authentication
+* MongoDB Database Design
+* CRUD Operations
+* Client-Server Architecture
+* Responsive UI Development
+
+---
+
+## 👨‍💻 Author
+
+* Rishi Jyotirmay Mahajan
+* Vimal Suresh P
